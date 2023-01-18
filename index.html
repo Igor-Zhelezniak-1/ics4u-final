@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Пинг-понг на JavaScript</title>
   <!-- Задаём стили для всего документа -->
@@ -9,6 +10,7 @@
       height: 100%;
       margin: 0;
     }
+
     body {
       background: black;
       display: flex;
@@ -17,6 +19,7 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Рисуем игровое поле -->
   <canvas width="750" height="585" id="game"></canvas>
@@ -36,21 +39,6 @@
     var paddleSpeed = 6;
     // Скорость мяча
     var ballSpeed = 4;
-    // Рекорд
-    var record = 0;
-    // Набранные очки
-    var count = 0;
-    // Узнаём размер хранилища
-    var Storage_size = localStorage.length;
-    // Если в хранилище что-то есть…
-    if (Storage_size > 0) {
-      // Достаём оттуда текущее значение рекорда
-      record = localStorage.getItem('record');
-      // Если там ничего нет —
-    } else {
-      // Делаем новую запись и кладём туда ноль — рекорда пока нет
-      localStorage.setItem('record', 0);
-    }
     // Описываем левую платформу
     const leftPaddle = {
       // Ставим её по центру
@@ -63,6 +51,7 @@
       // Платформа на старте никуда не движется
       dy: 0
     };
+    leftPaddle.dy = paddleSpeed;
     // Описываем правую платформу
     const rightPaddle = {
       // Ставим по центру с правой стороны
@@ -70,7 +59,7 @@
       y: canvas.height / 2 - paddleHeight / 2,
       // Задаём такую же ширину и высоту
       width: grid,
-      height: paddleHeight,
+      height: paddleHeight * 2,
       // Правая платформа тоже пока никуда не двигается
       dy: 0
     };
@@ -108,12 +97,13 @@
       if (leftPaddle.y < grid) {
         // то оставляем её на месте
         leftPaddle.y = grid;
+        leftPaddle.dy = paddleSpeed;
       }
       // Проверяем то же самое сверху
       else if (leftPaddle.y > LeftmaxPaddleY) {
         leftPaddle.y = LeftmaxPaddleY;
+        leftPaddle.dy = -paddleSpeed;
       }
-
       // Если правая платформа пытается вылезти за игровое поле вниз,
       if (rightPaddle.y < grid) {
         // то оставляем её на месте
@@ -131,8 +121,6 @@
       // Если мяч на предыдущем шаге куда-то двигался — пусть продолжает двигаться
       ball.x += ball.dx;
       ball.y += ball.dy;
-      // пусть платформа движется точно также, как и мяч
-      leftPaddle.dy = ball.dy;
       // Если мяч касается стены снизу — меняем направление по оси У на противоположное
       if (ball.y < grid) {
         ball.y = grid;
@@ -147,12 +135,6 @@
       if ((ball.x < 0 || ball.x > canvas.width) && !ball.resetting) {
         // Помечаем, что мяч перезапущен, чтобы не зациклиться
         ball.resetting = true;
-        // Если игрок набрал больше рекорда — записываем это как новый рекорд
-        if (count > record) { record = count };
-        // Обнуляем количество очков у игрока
-        count = 0;
-        // Кладём значение рекорда в хранилище браузера
-        localStorage.setItem('record', record);
         // Даём секунду на подготовку игрокам
         setTimeout(() => {
           // Всё, мяч в игре
@@ -173,8 +155,6 @@
       else if (collides(ball, rightPaddle)) {
         ball.dx *= -1;
         ball.x = rightPaddle.x - ball.width;
-        count += 1;
-
       }
       // Рисуем мяч
       context.fillRect(ball.x, ball.y, ball.width, ball.height);
@@ -198,6 +178,16 @@
           // то двигаем правую платформу вниз
           rightPaddle.dy = paddleSpeed;
         }
+        // Если нажата клавиша W,
+        if (e.which === 87) {
+          // то двигаем левую платформу вверх
+          leftPaddle.dy = -paddleSpeed;
+        }
+        // Если нажата клавиша S,
+        else if (e.which === 83) {
+          // то двигаем левую платформу вниз
+          leftPaddle.dy = paddleSpeed;
+        }
       });
       // А теперь следим за тем, когда кто-то отпустит клавишу, чтобы остановить движение платформы
       document.addEventListener('keyup', function (e) {
@@ -206,18 +196,16 @@
           // останавливаем правую платформу
           rightPaddle.dy = 0;
         }
+        // А если это W или S,
+        if (e.which === 83 || e.which === 87) {
+          // останавливаем левую платформу
+          leftPaddle.dy = 0;
+        }
       });
-      // Цвет текста
-      context.fillStyle = "#ff0000";
-      // Задаём размер и шрифт
-      context.font = "20pt Courier";
-      // Сначала выводим рекорд
-      context.fillText('Рекорд: ' + record, 150, 550);
-      // Затем — набранные очки
-      context.fillText(count, 450, 550);
     }
     // Запускаем игру
     requestAnimationFrame(loop);
   </script>
 </body>
+
 </html>
