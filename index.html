@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Пинг-понг на JavaScript</title>
+  <title>Final-poject-pong-game</title>
   <!-- Задаём стили для всего документа -->
   <style>
     html,
@@ -51,7 +51,7 @@
       // Платформа на старте никуда не движется
       dy: 0
     };
-    leftPaddle.dy = paddleSpeed;
+    // leftPaddle.dy = paddleSpeed;
     // Описываем правую платформу
     const rightPaddle = {
       // Ставим по центру с правой стороны
@@ -78,7 +78,6 @@
       dy: -ballSpeed
     };
     // Проверка на то, пересекаются два объекта с известными координатами или нет
-    // Подробнее тут: https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
     function collides(obj1, obj2) {
       return obj1.x < obj2.x + obj2.width &&
         obj1.x + obj1.width > obj2.x &&
@@ -162,10 +161,6 @@
       context.fillStyle = 'lightgrey';
       context.fillRect(0, 0, canvas.width, grid);
       context.fillRect(0, canvas.height - grid, canvas.width, canvas.height);
-      // Рисуем сетку посередине
-      for (let i = grid; i < canvas.height - grid; i += grid * 2) {
-        context.fillRect(canvas.width / 2 - grid / 2, i, grid, grid);
-      }
       // Отслеживаем нажатия клавиш
       document.addEventListener('keydown', function (e) {
         // Если нажата клавиша вверх,
